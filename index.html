@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw app</title>
+
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        canvas {
+            border: 2px solid black;
+            border-radius: 5px;
+            width: 600px;
+            height: 600px;
+        }
+        
+        .features {
+            background-color: black;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 804px;
+            padding: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .features>* {
+            background-color: #fff;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            height: 50px;
+            width: 50px;
+            border-radius: 10%;
+            margin: 0.25rem;
+            padding: 0.35rem;
+            cursor: pointer;
+        }
+        
+        .features>*:last-child {
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="features">
+        <button id="decrease_line_size">-</button>
+        <span id="line_size">10</span>
+        <button id="increase_line_size">+</button>
+        <input type="color" id="color">
+        <button id="erase">X</button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const incBTN = document.getElementById('increase_line_size');
+        const decBTN = document.getElementById('decrease_line_size');
+        const sizeEL = document.getElementById('line_size');
+        const colorEL = document.getElementById('color');
+        const erase = document.getElementById('erase');
+        const ctx = canvas.getContext("2d");
+
+
+        let size = 10;
+        let isPressed = false;
+        colorEL.value = "black";
+        let color = colorEL.value;
+        let x, y;
+
+        canvas.addEventListener("mousedown", (e) => {
+            isPressed = true;
+            x = e.offsetX;
+            y = e.offsetY;
+        });
+
+        document.addEventListener("mouseup", (e) => {
+            isPressed = false;
+            x = undefined;
+            y = undefined;
+
+        })
+
+        canvas.addEventListener("mousemove", (e) => {
+            if (isPressed) {
+                const x2 = e.offsetX;
+                const y2 = e.offsetY;
+                drawCircle(x2, y2);
+                drawLine(x, y, x2, y2);
+                x = x2;
+                y = y2;
+            }
+        });
+
+        function drawCircle(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = size * 2;
+            ctx.stroke();
+        }
+
+        function updateSize() {
+            sizeEL.innerText = size;
+        }
+
+        incBTN.addEventListener("click", (e) => {
+            size += 2;
+            if (size > 50) {
+                size = 50;
+            }
+            updateSize();
+        });
+
+        decBTN.addEventListener("click", (e) => {
+            size -= 2;
+            if (size < 5) {
+                size = 5;
+            }
+            updateSize();
+        });
+
+        colorEL.addEventListener("change", (e) => {
+            color = e.target.value;
+        });
+
+        erase.addEventListener("click", (e) => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        })
+    </script>
+
+</body>
+
+</html>
